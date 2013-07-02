@@ -1,0 +1,7 @@
+<Alloy>
+    <Window id="register" fullscreen="false">
+    
+        <Label id="registerLabel" />
+    
+    </Window>
+</Alloy>

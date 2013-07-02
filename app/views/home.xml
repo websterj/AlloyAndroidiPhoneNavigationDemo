@@ -1,0 +1,9 @@
+<Alloy>
+    <Tab id="tabHome">
+        <Window id="home"> 
+            <View class="container">
+                <Label id="labelHome" />
+            </View>
+        </Window>
+    </Tab>
+</Alloy>

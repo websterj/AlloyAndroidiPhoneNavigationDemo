@@ -1,0 +1,11 @@
+<Alloy>
+    <Tab id="tabList">
+        <Window id="list">
+            <View>
+                <ActivityIndicator id="activityIndicator" />
+                <Label id="labelNoRecords" />
+                <TableView id="tableRecords" />
+            </View>
+        </Window>
+    </Tab>
+</Alloy>

@@ -1,0 +1,12 @@
+<Alloy>
+    <Window id="loginForm" fullscreen="false">
+    
+        <View id="loginView" layout="vertical">
+            <TextField id="inputUsername" />
+            <TextField id="inputPassword" passwordMask="true" />
+            <Button id="buttonLogin" onClick="actionLogin" /> 
+            <ActivityIndicator id="activityIndicator" />
+        </View>
+    
+    </Window>
+</Alloy>

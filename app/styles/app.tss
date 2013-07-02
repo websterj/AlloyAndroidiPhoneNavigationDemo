@@ -1,0 +1,58 @@
+//
+// Frame / Typography
+//
+"Window": {
+    backgroundColor:"white"
+}
+
+".container": {
+    backgroundColor:"white"
+}
+
+"Label": {
+    width: Ti.UI.SIZE,
+    height: Ti.UI.SIZE,
+    color: "#000"
+}
+
+"TableView": {
+    height: Ti.UI.SIZE,
+    top: 0
+}
+
+
+//
+// Form
+//
+"TextField": {
+    width: 200,
+    top: 10,
+    borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
+    autocapitalization: Ti.UI.TEXT_AUTOCAPITALIZATION_NONE
+}
+"Button": {
+    top: 10
+}
+
+
+//
+// Components
+//
+"#activityIndicator": {
+    height: Ti.UI.SIZE,
+    width: Ti.UI.SIZE,
+    top: 20
+}
+"#activityIndicator[platform=ios]": {
+    style: Ti.UI.iPhone.ActivityIndicatorStyle.DARK
+}
+"#activityIndicator[platform=android]": {
+    style: Ti.UI.ActivityIndicatorStyle.PLAIN
+}
+
+"#labelNoRecords": {
+    height: Ti.UI.SIZE,
+    width: Ti.UI.SIZE,
+    visible: false,
+    top: 20
+}
