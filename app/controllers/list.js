@@ -7,12 +7,12 @@ $.list.title = L('list', 'List');
 
 
 //
-// Present our data - wrap it in an event handler which we can trigger when we maniuplate out data store
-// This eventListener is application-wide, but could be localised only
-// Done this way 'Ti.App.addEventListener' it can easily be triggered from other controllers
+// Present our data - wrap it in an event handler which we can trigger when we manipulate our data store
+// This eventListener is application-wide, but could be localised to this controller
+// Using 'Ti.App.addEventListener' it can be triggered from other controllers
 //
 Ti.App.addEventListener('dataUpdated', function(e) {
-    // Reset table if there is any - Alloy gives us access to underscore
+    // Reset table if there are any existing rows (Alloy includes underscore)
     if(! _.isEmpty($.tableRecords.data)) {
         $.tableRecords.data = [];
         $.tableRecords.removeEventListener('click', tableClick);
@@ -23,16 +23,17 @@ Ti.App.addEventListener('dataUpdated', function(e) {
     $.activityIndicator.show();
     $.labelNoRecords.visible = false;
     
-    // Wrap the following in a timeout to show activityIndicator (simulate network activity)
+    // Wrap the following in setTimeout purely to show activityIndicator (simulate network activity)
     setTimeout(function() {
+	
         $.activityIndicator.hide();
         
         // Require our data store - we are not creating a fresh instance each call
-        // Access to the data module we are requiring works like a Singleton (create new, or reuse if exists)
+        // Access to the data module we are requiring works like a singleton (create new, or reuse if exists)
         var AppData = require('data');
         var dataStore = AppData.getAll();
         
-        // Either set the state for no records, or loop and add as table rows
+        // Either set the state for no records, or loop and add each item as a TableViewRow
         if(! dataStore.length) {
             $.labelNoRecords.text = L('noRecordsFound', 'No Records Found');
             $.labelNoRecords.visible = true;
@@ -56,7 +57,7 @@ Ti.App.addEventListener('dataUpdated', function(e) {
                 });
                 recordData.push(row);              
             }
-            // Set the table data in 1 go, rather than making repeated calls on the loop
+            // Set the table data in one go rather than making repeated (costlier) calls on the loop
             $.tableRecords.setData(recordData);                       
         }
         
@@ -69,7 +70,7 @@ Ti.App.addEventListener('dataUpdated', function(e) {
     }, 2000);        
 });
 
-// Manually call out dataUpdated once to perform initial rendering
+// Manually call dataUpdated once to perform the initial table rendering (subsequently called after data edited)
 Ti.App.fireEvent('dataUpdated');
 
 
@@ -84,21 +85,21 @@ function tableClick(e) {
     var someRandomVar = e.rowData.someRandomVar;
     
     // All single clicks are just going to open the detail window for this item
-    // We pass the tab object to a child window so any window it needs to open, it has a reference with which to do so
-    // Rather than passing as a controller arg, could set: Alloy.Globals.tabList = $.tabList; 
+    // We pass the tab object to the child controller so if it needed to open a window it has a reference to the parent tab in which to do so
+    // Rather than passing $.tabList as a controller arg, we could set: Alloy.Globals.tabList = $.tabList; outside of this function
     // and have the child controller call: Alloy.Globals.tabList.open(someController.getView()) instead of parentTab.open(someController.getView()) 
     var detailController = Alloy.createController('detail', {
         parentTab: $.tabList,
         dataId: dataId
     });
-    // As detail will only be opened from list controller, which will call an open() method of it
+    // As detail controller will only be opened from this list controller, which will call an open() method on it
     // there is no need in the detail.js controller to call $.detail.open();
     $.tabList.open(detailController.getView()); 
 }
+// Long clicks open the options menu, enabling us to view, delete, or cancel the row item
 function tableLongPress(e) {
     var dataId = e.rowData.dataId;
 
-    // Long clicks open the options menu, enabling us to view, delete, or cancel
     var dialog = Ti.UI.createOptionDialog({
         options: ['View', 'Delete', 'Cancel'],
         cancel: 2,
@@ -107,11 +108,12 @@ function tableLongPress(e) {
         dataId: dataId
     });  
     
-    // Handle clicks on out dialog menu
+    // Handle clicks on our dialog menu itself
     dialog.addEventListener('click', function(e) {
         var index = e.index;
         var dataId = e.source.dataId;
 
+		// View option selected
         if (dataId !== '' && index === 0) {
             var detailController = Alloy.createController('detail', {
                 parentTab: $.tabList,
@@ -119,12 +121,16 @@ function tableLongPress(e) {
             });
             $.tabList.open(detailController.getView()); 
         } else if (dataId !== '' && index === 1) {
+		    // Delete option selected
+			// Checking for !== '' specifically as dataId in this case could be 0 - array key 1st position
             var AppData = require('data');
             AppData.deleteItem(dataId);
             Ti.App.fireEvent('dataUpdated');
         }
         
-        // Tidy up our dialog - some option we are looking for should have already been inititated
+        // Tidy up our dialog
+		// Need to look into comparing performance of this approach (rebuilding dialog each time)
+		// Vs creating a single dialog and reusing it each time (changing the dataId)
         dialog.hide();
         dialog = null;
     });
@@ -135,7 +141,12 @@ function tableLongPress(e) {
 
 // Menu Clicks
 function openAddItem() {
-    alert('Add Item');
+	// We aren't adding the function to add rows
+	// Otherwise this would open a "create" controller like how detail is created in dialog above
+	// Create would have a form, which if valid, push the data to an "AppData.addItem(dataObject);"
+	// And then close the window and trigger the redrawing of the data table
+	// $.create.close(); Ti.App.fireEvent('dataUpdated');
+    alert('Not Implemented');
 }
 
 
@@ -155,6 +166,8 @@ if(OS_ANDROID) {
                 var menu = e.menu;
                 var menuItem1 = menu.add({
                     title: L('addItem', 'Add Item'),
+					// http://docs.appcelerator.com/titanium/latest/#!/api/Titanium.Android.MenuItem
+					// Menu items can be all hidden, shown if space available, forced to show all times
                     showAsAction: Ti.Android.SHOW_AS_ACTION_NEVER
                 });
                 menuItem1.addEventListener('click', openAddItem);

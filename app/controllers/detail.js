@@ -6,12 +6,12 @@ var parentTab = args.parentTab || '';
 var dataId = (args.dataId === 0 || args.dataId > 0) ? args.dataId : '';
 
 //
-// The list controller shouldn't call detail unless it has an id it is going to pass it
-// Just double check we got it anyway and nothing if not
+// The list controller "shouldn't" call detail unless it has an id it is going to pass it in the first place
+// Just double check we got it anyway and do nothing if we didn't
 //
 if (dataId !== '') {
     //
-    // Fetch data row and assign to the label
+    // Fetch data row and assign title value to the label/window title (nothing else!)
     //
     var AppData = require('data');
     var dataItem = AppData.getItem(dataId);
@@ -41,7 +41,7 @@ if (dataId !== '') {
             }
         });
         
-        // Back Button (not necessary in this case though)
+        // Back Button - not really necessary here - this is the default behaviour anyway?
         $.detail.addEventListener('android:back', function() {              
             $.detail.close();
             $.detail = null;
@@ -49,6 +49,7 @@ if (dataId !== '') {
     }
     
     // iOS
-    // as detail opened in tabGroup, iOS will handle the nav itself, giving the back button a title - we could take more control
-    // or could add right nav button to do something with this detail, like delete it
+    // as detail was opened in the tabGroup, iOS will handle the nav itself (back button action and title)
+    // but we could change the iOS back button text:
+    //$.detail.backButtonTitle = L('backText', 'Back to List');
 }
